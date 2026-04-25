@@ -6,6 +6,7 @@ The client pitches their idea; agents deliberate across three rounds and produce
 """
 
 import os
+import re
 import json
 import time
 from pathlib import Path
@@ -87,6 +88,12 @@ def get_openai_client():
 OAI_CLIENT = get_openai_client()
 
 # ─── Helpers ───────────────────────────────────────────────────────────────────
+def sanitize_project_name(name: str) -> str:
+    """Convert a product name into a filesystem-safe slug (e.g. 'NoteSync Pro' -> 'NoteSync_Pro')."""
+    slug = re.sub(r'[^\w\s-]', '', name).strip()
+    slug = re.sub(r'[\s-]+', '_', slug)
+    return slug or "project"
+
 def separator(char="─", width=70, color=DIM):
     print(f"{color}{char * width}{RESET}")
 
@@ -703,10 +710,11 @@ def run_final_briefings(context: dict) -> dict:
     return briefings
 
 # ─── Save Agent Briefings ───────────────────────────────────────────────────────
-def save_briefings(briefings: dict, context: dict):
-    output_dir = Path("outputs")
-    output_dir.mkdir(exist_ok=True)
-    output_path = output_dir / "agent_briefings.json"
+def save_briefings(briefings: dict, context: dict, project_name: str = "project"):
+    slug = sanitize_project_name(project_name)
+    output_dir = Path("outputs") / slug
+    output_dir.mkdir(parents=True, exist_ok=True)
+    output_path = output_dir / f"{slug}_briefings.json"
 
     briefings_doc = {
         "client_idea": context["client_idea"],
@@ -842,9 +850,11 @@ def generate_requirements(context: dict) -> dict:
 
 # ─── Save Requirements ──────────────────────────────────────────────────────────
 def save_output(doc: dict):
-    output_dir = Path("outputs")
-    output_dir.mkdir(exist_ok=True)
-    output_path = output_dir / "board_meeting_result.json"
+    product_name = doc.get("product_name", "project")
+    slug = sanitize_project_name(product_name)
+    output_dir = Path("outputs") / slug
+    output_dir.mkdir(parents=True, exist_ok=True)
+    output_path = output_dir / f"{slug}_requirements.json"
     with open(output_path, "w") as f:
         json.dump(doc, f, indent=2)
     print(f"\n{AGREE_COLOR}{BOLD}✓ Requirements saved to: {output_path}{RESET}")
@@ -944,12 +954,13 @@ def main():
     time.sleep(0.5)
 
     briefings = run_final_briefings(context)
-    save_briefings(briefings, context)
 
     print(f"\n{DIM}Briefings complete. Generating requirements document...{RESET}\n")
     time.sleep(0.5)
 
     doc = generate_requirements(context)
+    project_name = doc.get("product_name", "project")
+    save_briefings(briefings, context, project_name)
     save_output(doc)
     print_summary(doc)
 
