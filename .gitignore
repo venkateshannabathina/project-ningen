@@ -3,5 +3,5 @@ venv/
 __pycache__/
 *.pyc
 .DS_Store
-outputs/*
-!outputs/.gitkeep
+#outputs/*
+#!outputs/.gitkeep

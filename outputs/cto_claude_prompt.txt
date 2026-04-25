@@ -1,0 +1,57 @@
+**Prompt for Claude Code to Build TodoMaster Pro Single Page Web Application**
+
+---
+
+**Build a complete single page web application for "TodoMaster Pro" with the following specifications:**
+
+### File Structure
+- Everything must be contained within a single HTML file named `index.html`.
+
+### Color Scheme
+- Primary colors:
+  - Navy: `#0A0A1A`
+  - Amber: `#F5A04A`
+
+### Content and Layout
+1. **Hero Section**
+   - Background color: navy `#0A0A1A`
+   - Text:
+     - Product Name: "TodoMaster Pro" (Font size: 48px, color: amber `#F5A04A`)
+     - Tagline: "Revolutionizing task management for busy professionals." (Font size: 24px, color: white)
+   - Center the text both vertically and horizontally in the hero section.
+
+2. **Features Section**
+   - Background color: white
+   - Title: "Key Features" (Font size: 36px, color: navy `#0A0A1A`, centered)
+   - List the following features:
+     - Feature 1: "Robust data synchronization across multiple devices and platforms."
+     - Feature 2: "User authentication and secure data management."
+     - Feature 3: "Real-time conflict resolution for task updates."
+   - Each feature must be displayed in its own box with padding of 20px, border-radius of 10px, and a subtle shadow effect for depth. Use navy `#0A0A1A` for the box border.
+
+3. **Call to Action Section**
+   - Background color: navy `#0A0A1A`
+   - Text: "Get Started Today!" (Font size: 30px, color: amber `#F5A04A`, centered)
+   - Button:
+     - Text: "Sign Up Now" (Font size: 20px, color: white)
+     - Background color: amber `#F5A04A`
+     - Padding: 15px 30px
+     - Border-radius: 5px
+     - Center the button below the text.
+     - Button should change to a darker amber on hover.
+
+4. **Footer**
+   - Background color: navy `#0A0A1A`
+   - Text: "© 2023 TodoMaster Pro" (Font size: 14px, color: amber `#F5A04A`, centered)
+
+### Design and Responsiveness
+- Ensure the design is fully responsive across devices (desktop, tablet, mobile).
+- Utilize a clean and modern CSS layout with Flexbox or Grid for alignment and spacing.
+- No external dependencies or frameworks; write all CSS directly within the `<style>` tag in the HTML file.
+
+### Final Instructions
+- Save everything to a single file called `index.html`.
+
+---
+
+**End of Prompt**
