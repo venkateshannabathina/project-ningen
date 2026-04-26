@@ -1,3 +1,11 @@
+---
+title: Project Ningen
+emoji: 🏢
+colorFrom: blue
+colorTo: red
+sdk: docker
+pinned: false
+---
 # Ningen (人間)
 
 AI boardroom that turns a startup idea into requirements, product output, marketing assets, operations docs, and strategy docs.

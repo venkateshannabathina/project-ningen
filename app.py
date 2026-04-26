@@ -4,12 +4,22 @@ Ningen AI Boardroom
 Run: streamlit run app.py
 """
 
-import streamlit as st
-import streamlit.components.v1 as components
+import os
+import sys
+import threading
+import time
+import socket
 from pathlib import Path
 
+# If this is run via `python app.py` (e.g. in Hugging Face Docker), we run a pure Flask app.
+# If run via `streamlit run app.py`, we run the Streamlit wrapper.
+IS_STREAMLIT = "streamlit" in sys.argv[0] or "streamlit" in getattr(sys, "modules", {})
+
+if IS_STREAMLIT:
+    import streamlit as st
+    import streamlit.components.v1 as components
+
 # ── Start Flask API server (once, cached across reruns) ─────────
-import threading, time, socket
 
 def _api_port_open(port=5001):
     try:
@@ -19,12 +29,11 @@ def _api_port_open(port=5001):
     except OSError:
         return False
 
-@st.cache_resource
 def _ensure_api_running():
     if _api_port_open():
         return "already_running"
     from api_server import start_server
-    t = threading.Thread(target=start_server, args=(5001,), daemon=False)
+    t = threading.Thread(target=start_server, args=(5001,), daemon=True)
     t.start()
     for _ in range(20):
         time.sleep(0.5)
@@ -32,34 +41,40 @@ def _ensure_api_running():
             return "started"
     return "timeout"
 
-_ensure_api_running()
+if IS_STREAMLIT:
+    # Streamlit caching to avoid restarting the thread
+    @st.cache_resource
+    def _memoized_api_startup():
+        return _ensure_api_running()
+    _memoized_api_startup()
 
-# ── Page config ─────────────────────────────────────────────────
-st.set_page_config(
-    page_title="Ningen — AI Boardroom",
-    page_icon="🏢",
-    layout="wide",
-    initial_sidebar_state="collapsed",
-)
+    # ── Page config ─────────────────────────────────────────────────
+    st.set_page_config(
+        page_title="Ningen — AI Boardroom",
+        page_icon="🏢",
+        layout="wide",
+        initial_sidebar_state="collapsed",
+    )
 
-st.markdown("""
-<style>
-[data-testid="stSidebar"] { display: none !important; }
-#MainMenu { visibility: hidden; }
-footer { visibility: hidden; }
-header { visibility: hidden; }
-.stApp { padding: 0 !important; margin: 0 !important; background: #D4A882; }
-.block-container { padding: 0 !important; max-width: 100% !important; }
-</style>
-""", unsafe_allow_html=True)
+    st.markdown("""
+    <style>
+    [data-testid="stSidebar"] { display: none !important; }
+    #MainMenu { visibility: hidden; }
+    footer { visibility: hidden; }
+    header { visibility: hidden; }
+    .stApp { padding: 0 !important; margin: 0 !important; background: #D4A882; }
+    .block-container { padding: 0 !important; max-width: 100% !important; }
+    </style>
+    """, unsafe_allow_html=True)
 
 
 # ── Patch uidesign.html to use real backend ─────────────────────
-def load_ui():
+def load_ui(api_base="http://localhost:5001"):
     html_path = Path("uidesign.html")
     if not html_path.exists():
-        st.error("uidesign.html not found!")
-        return ""
+        if IS_STREAMLIT:
+            st.error("uidesign.html not found!")
+        return "uidesign.html not found!"
 
     html = html_path.read_text(encoding="utf-8")
 
@@ -74,15 +89,15 @@ def load_ui():
     }, 60);
   };"""
 
-    new_start = """  const startMeeting = () => {
+    new_start = f"""  const startMeeting = () => {{
     clearSim();
     setTab(0);
     setSimState('running');
-    setMessages([{agent:'SYSTEM', round:'INTRO', text:'Welcome to the Ningen AI Boardroom! What product or startup idea should we build today?'}]);
+    setMessages([{{agent:'SYSTEM', round:'INTRO', text:'Welcome to the Ningen AI Boardroom! What product or startup idea should we build today?'}}]);
     setInputGlow(true);
     window._ningenPhase = 'idle';
-    fetch('http://localhost:5001/api/reset', {method:'POST'}).catch(()=>{});
-  };"""
+    fetch('{api_base}/api/reset', {{method:'POST'}}).catch(()=>{{}});
+  }};"""
 
     # ── 2. Replace handleSend() — send to Flask API, keep local optimistic update
     old_send = """  const handleSend = () => {
@@ -91,27 +106,27 @@ def load_ui():
     setInput(''); setInputGlow(false);
   };"""
 
-    new_send = """  const handleSend = () => {
+    new_send = f"""  const handleSend = () => {{
     if (!input.trim()) return;
     const text = input.trim();
-    setMessages(prev => [...prev, {agent:'FOUNDER', round:'REPLY', text}]);
+    setMessages(prev => [...prev, {{agent:'FOUNDER', round:'REPLY', text}}]);
     setInput('');
     setInputGlow(false);
     const phase = window._ningenPhase || 'idle';
-    fetch('http://localhost:5001/api/send', {
+    fetch('{api_base}/api/send', {{
       method: 'POST',
-      headers: {'Content-Type': 'application/json'},
-      body: JSON.stringify({text, phase})
-    }).catch(()=>{});
+      headers: {{'Content-Type': 'application/json'}},
+      body: JSON.stringify({{text, phase}})
+    }}).catch(()=>{{}});
     window._ningenPhase = 'waiting';
-  };
+  }};
 
   // ── Poll backend every 1.5s for real board meeting messages + agent results ──
-  useEffect(() => {
-    const iv = setInterval(() => {
-      fetch('http://localhost:5001/api/messages')
+  useEffect(() => {{
+    const iv = setInterval(() => {{
+      fetch('{api_base}/api/messages')
         .then(r => r.json())
-        .then(data => {
+        .then(data => {{
           if (data.messages && data.messages.length > 0) setMessages(data.messages);
           if (data.agentStates)          setAgentState(data.agentStates);
           if (data.statuses)             setStatuses(data.statuses);
@@ -119,16 +134,16 @@ def load_ui():
           if (data.reward !== undefined) setReward(data.reward);
           if (data.episode)              setEpisode(data.episode);
           if (data.agent_results)        setAgentResults(data.agent_results);
-          if (data.phase) {
+          if (data.phase) {{
             window._ningenPhase = data.phase;
             if (data.phase === 'answering') setInputGlow(true);
-            if (data.phase === 'done')      { setSimState('done'); setInputGlow(false); }
-          }
-        })
-        .catch(()=>{});
-    }, 1500);
+            if (data.phase === 'done')      {{ setSimState('done'); setInputGlow(false); }}
+          }}
+        }})
+        .catch(()=>{{}});
+    }}, 1500);
     return () => clearInterval(iv);
-  }, []);"""
+  }}, []);"""
 
     # ── 3. Add agentResults + modal state after episode state ────────
     html = html.replace(
@@ -153,13 +168,13 @@ def load_ui():
                 const isDone = r.status === 'done';
                 const sColor = {idle:'#bbb',running:'#F5A04A',done:'#27AE60',error:'#E74C3C'}[r.status]||'#bbb';
                 const sLabel = {idle:'waiting',running:label+'...',done:'tap to view',error:'✗ error'}[r.status]||'waiting';
-                const handleClick = () => {
+                const handleClick = () => {{
                   if (!isDone) return;
-                  fetch(`http://localhost:5001/api/output/${id}`)
+                  fetch(`{api_base}/api/output/${{id}}`)
                     .then(res => res.json())
-                    .then(data => setModal({agent:id, color, ...data}))
-                    .catch(()=>{});
-                };
+                    .then(data => setModal({{agent:id, color, ...data}}))
+                    .catch(()=>{{}});
+                }};
                 return (
                   <div key={id} onClick={handleClick}
                     style={{display:'flex',alignItems:'center',gap:7,padding:'5px 7px',
@@ -260,6 +275,22 @@ def load_ui():
     html = html.replace(old_send, new_send)
     return html
 
-
-html_content = load_ui()
-components.html(html_content, height=900, scrolling=False)
+if IS_STREAMLIT:
+    html_content = load_ui("http://localhost:5001")
+    components.html(html_content, height=900, scrolling=False)
+else:
+    # Run as pure Flask server (for Hugging Face Spaces / Docker)
+    if __name__ == "__main__":
+        import logging
+        from api_server import flask_app
+        
+        # Load UI with relative API base path
+        html_content = load_ui("")
+        
+        @flask_app.route("/")
+        def index():
+            return html_content
+            
+        port = int(os.environ.get("PORT", 7860))
+        print(f"Starting pure Flask server on port {port}...")
+        flask_app.run(host="0.0.0.0", port=port, debug=False, use_reloader=False)
