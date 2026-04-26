@@ -152,7 +152,8 @@ def load_ui(api_base="http://localhost:5001"):
         "  const [agentResults, setAgentResults] = useState("
         "{CEO:{status:'idle',output:''},CTO:{status:'idle',output:''},"
         "CMO:{status:'idle',output:''},COO:{status:'idle',output:''}});\n"
-        "  const [modal, setModal] = useState(null);",
+        "  const [modal, setModal] = useState(null);\n"
+        "  const [modalTab, setModalTab] = useState(null);",
     )
 
     # ── 4. Replace play area with clickable live Results box ─────────
@@ -172,7 +173,10 @@ def load_ui(api_base="http://localhost:5001"):
                   if (!isDone) return;
                   fetch(`{api_base}/api/output/${{id}}`)
                     .then(res => res.json())
-                    .then(data => setModal({{agent:id, color, ...data}}))
+                    .then(data => {{
+                       setModal({{agent:id, color, ...data}});
+                       if (data.files) setModalTab(Object.keys(data.files)[0]);
+                    }})
                     .catch(()=>{{}});
                 }};
                 return (
@@ -239,16 +243,15 @@ def load_ui(api_base="http://localhost:5001"):
           {/* CMO / COO / CEO — tabbed text content */}
           {(modal.type === 'cmo' || modal.type === 'doc') && modal.files && (() => {
             const keys = Object.keys(modal.files);
-            const [activeTab, setActiveTab] = React.useState(keys[0]);
             return (
               <div style={{flex:1,display:'flex',flexDirection:'column',overflow:'hidden'}}>
                 <div style={{display:'flex',gap:8,padding:'10px 16px',borderBottom:'2px solid #eee',
                   flexShrink:0,overflowX:'auto'}}>
                   {keys.map(k => (
-                    <button key={k} onClick={()=>setActiveTab(k)}
+                    <button key={k} onClick={()=>setModalTab(k)}
                       style={{padding:'6px 14px',borderRadius:20,border:`2px solid ${modal.color}`,
-                        background:activeTab===k?modal.color:'transparent',
-                        color:activeTab===k?'#fff':modal.color,
+                        background:modalTab===k?modal.color:'transparent',
+                        color:modalTab===k?'#fff':modal.color,
                         fontWeight:700,fontSize:12,cursor:'pointer',whiteSpace:'nowrap'}}>
                       {k}
                     </button>
@@ -257,7 +260,7 @@ def load_ui(api_base="http://localhost:5001"):
                 <pre style={{flex:1,overflow:'auto',margin:0,padding:'16px 20px',
                   fontSize:13,lineHeight:1.6,whiteSpace:'pre-wrap',wordBreak:'break-word',
                   fontFamily:'system-ui,sans-serif',color:'#222',background:'#fdfdfd'}}>
-                  {modal.files[activeTab] || '(empty)'}
+                  {modal.files[modalTab] || modal.files[keys[0]] || '(empty)'}
                 </pre>
               </div>
             );
