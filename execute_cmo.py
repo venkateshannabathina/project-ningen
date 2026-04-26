@@ -507,5 +507,29 @@ def main():
     separator("═", 70)
 
 
+# ─── Pipeline Wrapper ───────────────────────────────────────────────────────
+def run_cmo_pipeline() -> dict:
+    """Run full CMO pipeline. Returns success status. Used by app.py and run_all.py."""
+    try:
+        data = read_requirements()
+        content = generate_content(data)
+        save_content(content)
+        results = publish_content(content, data)
+
+        marketing_files = [
+            Path("outputs") / f for f in
+            ["cold_email.md", "devto_article.md", "discord_post.md", "reddit_post.md"]
+            if (Path("outputs") / f).exists()
+        ]
+
+        return {
+            "success": bool(marketing_files),
+            "files": [str(f) for f in marketing_files],
+            "publish_results": results,
+        }
+    except Exception as e:
+        return {"success": False, "files": [], "error": str(e)}
+
+
 if __name__ == "__main__":
     main()

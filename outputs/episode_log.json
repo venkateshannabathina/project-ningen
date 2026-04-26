@@ -1,0 +1,111 @@
+[
+  {
+    "episode": 1,
+    "idea": "AI powered recipe generator",
+    "product_name": "AI-Powered Recipe Generator",
+    "reward": 0.85,
+    "reward_breakdown": {
+      "requirements_score": 1.0,
+      "product_score": 1.0,
+      "marketing_score": 1.0,
+      "conflict_resolution": 1.0,
+      "efficiency_score": 0.0
+    },
+    "requirements_generated": true,
+    "product_built": true,
+    "marketing_published": true,
+    "conflicts_detected": 2,
+    "conflicts_resolved": 2,
+    "llm_calls": 32,
+    "errors": [],
+    "timestamp": "2026-04-25T22:50:22.739794"
+  },
+  {
+    "episode": 2,
+    "idea": "personal finance tracker for students",
+    "product_name": "Personal Finance Tracker for Students",
+    "reward": 0.925,
+    "reward_breakdown": {
+      "requirements_score": 1.0,
+      "product_score": 1.0,
+      "marketing_score": 1.0,
+      "conflict_resolution": 1.0,
+      "efficiency_score": 0.5
+    },
+    "requirements_generated": true,
+    "product_built": true,
+    "marketing_published": true,
+    "conflicts_detected": 1,
+    "conflicts_resolved": 1,
+    "llm_calls": 30,
+    "errors": [],
+    "timestamp": "2026-04-25T22:53:16.472884"
+  },
+  {
+    "episode": 3,
+    "idea": "remote team collaboration tool",
+    "product_name": "Remote Team Collaboration Tool",
+    "reward": 0.925,
+    "reward_breakdown": {
+      "requirements_score": 1.0,
+      "product_score": 1.0,
+      "marketing_score": 1.0,
+      "conflict_resolution": 1.0,
+      "efficiency_score": 0.5
+    },
+    "requirements_generated": true,
+    "product_built": true,
+    "marketing_published": true,
+    "conflicts_detected": 1,
+    "conflicts_resolved": 1,
+    "llm_calls": 30,
+    "errors": [],
+    "timestamp": "2026-04-25T22:55:42.094414"
+  },
+  {
+    "episode": 1,
+    "idea": "AI powered recipe generator",
+    "product_name": "AI Powered Recipe Generator",
+    "reward": 0.675,
+    "reward_breakdown": {
+      "requirements_score": 1.0,
+      "product_score": 0.0,
+      "marketing_score": 1.0,
+      "conflict_resolution": 1.0,
+      "efficiency_score": 0.5
+    },
+    "requirements_generated": true,
+    "product_built": false,
+    "marketing_published": true,
+    "conflicts_detected": 1,
+    "conflicts_resolved": 1,
+    "llm_calls": 28,
+    "errors": [
+      "CTO execution failed: cannot import name 'generate_claude_prompt' from 'execute_cto' (/Users/venkateshannabathina/Desktop/project-ningen/execute_cto.py)"
+    ],
+    "timestamp": "2026-04-26T12:36:26.389017"
+  },
+  {
+    "episode": 2,
+    "idea": "personal finance tracker for students",
+    "product_name": "Personal Finance Tracker for Students",
+    "reward": 0.675,
+    "reward_breakdown": {
+      "requirements_score": 1.0,
+      "product_score": 0.0,
+      "marketing_score": 1.0,
+      "conflict_resolution": 1.0,
+      "efficiency_score": 0.5
+    },
+    "requirements_generated": true,
+    "product_built": false,
+    "marketing_published": true,
+    "conflicts_detected": 1,
+    "conflicts_resolved": 1,
+    "llm_calls": 28,
+    "errors": [
+      "CTO execution failed: cannot import name 'generate_claude_prompt' from 'execute_cto' (/Users/venkateshannabathina/Desktop/project-ningen/execute_cto.py)"
+    ],
+    "timestamp": "2026-04-26T12:38:03.755676"
+  }
+]

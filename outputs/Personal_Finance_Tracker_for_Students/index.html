@@ -1,0 +1,1181 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Personal Finance Tracker for Students</title>
+    <style>
+        /* =============================================
+           RESET & GLOBAL STYLES
+           ============================================= */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        html, body {
+            height: 100%;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: #333;
+        }
+
+        body {
+            display: flex;
+            flex-direction: column;
+            overflow-x: hidden;
+        }
+
+        /* Color Variables */
+        :root {
+            --navy: #0A0A1A;
+            --amber: #F5A04A;
+            --white: #FFFFFF;
+            --light-gray: #F8F9FA;
+            --dark-gray: #333333;
+            --border-radius: 8px;
+            --shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            --shadow-hover: 0 8px 12px rgba(0, 0, 0, 0.15);
+        }
+
+        /* =============================================
+           HEADER / NAVIGATION
+           ============================================= */
+        header {
+            background-color: var(--navy);
+            color: var(--amber);
+            padding: 1rem 2rem;
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: var(--shadow);
+        }
+
+        .logo {
+            font-size: 1.5rem;
+            font-weight: bold;
+            text-decoration: none;
+            color: var(--amber);
+            cursor: pointer;
+        }
+
+        nav {
+            display: flex;
+            gap: 2rem;
+        }
+
+        nav a {
+            color: var(--amber);
+            text-decoration: none;
+            font-size: 0.95rem;
+            transition: opacity 0.3s ease;
+            cursor: pointer;
+        }
+
+        nav a:hover {
+            opacity: 0.8;
+        }
+
+        .auth-buttons {
+            display: flex;
+            gap: 1rem;
+        }
+
+        .btn-small {
+            padding: 0.5rem 1rem;
+            background-color: var(--amber);
+            color: var(--white);
+            border: none;
+            border-radius: var(--border-radius);
+            cursor: pointer;
+            font-size: 0.9rem;
+            transition: all 0.3s ease;
+        }
+
+        .btn-small:hover {
+            background-color: #e5941d;
+            transform: translateY(-2px);
+        }
+
+        /* =============================================
+           AUTHENTICATION MODAL
+           ============================================= */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 2000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            align-items: center;
+            justify-content: center;
+            animation: fadeIn 0.3s ease;
+        }
+
+        .modal.active {
+            display: flex;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        .modal-content {
+            background-color: var(--white);
+            padding: 2.5rem;
+            border-radius: var(--border-radius);
+            box-shadow: var(--shadow-hover);
+            width: 90%;
+            max-width: 400px;
+            animation: slideUp 0.3s ease;
+        }
+
+        @keyframes slideUp {
+            from {
+                transform: translateY(50px);
+                opacity: 0;
+            }
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+        }
+
+        .modal-header h2 {
+            color: var(--navy);
+            font-size: 1.5rem;
+        }
+
+        .close-btn {
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            cursor: pointer;
+            color: var(--dark-gray);
+        }
+
+        .form-group {
+            margin-bottom: 1.25rem;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 0.5rem;
+            color: var(--navy);
+            font-weight: 500;
+        }
+
+        input[type="text"],
+        input[type="email"],
+        input[type="password"],
+        input[type="number"],
+        select {
+            width: 100%;
+            padding: 0.75rem;
+            border: 1px solid #ddd;
+            border-radius: var(--border-radius);
+            font-size: 0.95rem;
+            transition: border-color 0.3s ease;
+        }
+
+        input:focus,
+        select:focus {
+            outline: none;
+            border-color: var(--amber);
+            box-shadow: 0 0 0 3px rgba(245, 160, 74, 0.1);
+        }
+
+        .btn-primary {
+            width: 100%;
+            padding: 0.75rem;
+            background-color: var(--amber);
+            color: var(--white);
+            border: none;
+            border-radius: var(--border-radius);
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .btn-primary:hover {
+            background-color: #e5941d;
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-hover);
+        }
+
+        .form-footer {
+            text-align: center;
+            margin-top: 1rem;
+            font-size: 0.9rem;
+        }
+
+        .form-footer button {
+            background: none;
+            border: none;
+            color: var(--amber);
+            cursor: pointer;
+            text-decoration: underline;
+        }
+
+        /* =============================================
+           HERO SECTION
+           ============================================= */
+        .hero {
+            background-color: var(--navy);
+            color: var(--amber);
+            padding: 6rem 2rem;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            min-height: 500px;
+        }
+
+        .hero h1 {
+            font-size: clamp(2rem, 5vw, 3.5rem);
+            margin-bottom: 1rem;
+            font-weight: 700;
+        }
+
+        .hero p {
+            font-size: 1.25rem;
+            margin-bottom: 2rem;
+            opacity: 0.95;
+        }
+
+        /* =============================================
+           FEATURES SECTION
+           ============================================= */
+        .features {
+            background-color: var(--amber);
+            padding: 4rem 2rem;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 2rem;
+            align-items: stretch;
+        }
+
+        .features-title {
+            grid-column: 1 / -1;
+            text-align: center;
+            color: var(--navy);
+            font-size: 2rem;
+            margin-bottom: 1rem;
+        }
+
+        .feature-card {
+            background-color: var(--white);
+            padding: 2rem;
+            border-radius: var(--border-radius);
+            box-shadow: var(--shadow);
+            transition: all 0.3s ease;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .feature-card:hover {
+            transform: translateY(-8px);
+            box-shadow: var(--shadow-hover);
+        }
+
+        .feature-card h3 {
+            color: var(--navy);
+            font-size: 1.3rem;
+            margin-bottom: 1rem;
+        }
+
+        .feature-card p {
+            color: #666;
+            font-size: 0.95rem;
+            line-height: 1.6;
+            flex-grow: 1;
+        }
+
+        /* =============================================
+           MAIN CONTENT / DASHBOARD SECTION
+           ============================================= */
+        main {
+            flex: 1;
+            display: none;
+        }
+
+        main.active {
+            display: block;
+        }
+
+        .dashboard-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+
+        .dashboard-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+            margin-bottom: 2rem;
+        }
+
+        .card {
+            background-color: var(--white);
+            border-radius: var(--border-radius);
+            box-shadow: var(--shadow);
+            padding: 1.5rem;
+        }
+
+        .card h2 {
+            color: var(--navy);
+            margin-bottom: 1.25rem;
+            font-size: 1.3rem;
+        }
+
+        .card-content {
+            color: #666;
+            line-height: 1.6;
+        }
+
+        /* =============================================
+           TRANSACTION TRACKING
+           ============================================= */
+        .transaction-form {
+            background-color: var(--light-gray);
+            padding: 1.5rem;
+            border-radius: var(--border-radius);
+            margin-bottom: 2rem;
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 1rem;
+            margin-bottom: 1rem;
+        }
+
+        .transaction-list {
+            max-height: 400px;
+            overflow-y: auto;
+        }
+
+        .transaction-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1rem;
+            border-bottom: 1px solid #eee;
+            background-color: var(--white);
+            margin-bottom: 0.5rem;
+            border-radius: var(--border-radius);
+            transition: all 0.3s ease;
+        }
+
+        .transaction-item:hover {
+            background-color: var(--light-gray);
+        }
+
+        .transaction-info h4 {
+            color: var(--navy);
+            margin-bottom: 0.25rem;
+        }
+
+        .transaction-info p {
+            color: #999;
+            font-size: 0.85rem;
+        }
+
+        .transaction-amount {
+            font-weight: bold;
+            font-size: 1.1rem;
+        }
+
+        .transaction-amount.income {
+            color: #28a745;
+        }
+
+        .transaction-amount.expense {
+            color: #dc3545;
+        }
+
+        /* =============================================
+           BUDGET TOOLS
+           ============================================= */
+        .budget-item {
+            margin-bottom: 1.5rem;
+        }
+
+        .budget-label {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 0.5rem;
+            color: var(--navy);
+            font-weight: 500;
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 8px;
+            background-color: #e0e0e0;
+            border-radius: 4px;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background-color: var(--amber);
+            transition: width 0.3s ease;
+        }
+
+        .progress-fill.warning {
+            background-color: #ff9800;
+        }
+
+        .progress-fill.danger {
+            background-color: #dc3545;
+        }
+
+        /* =============================================
+           CTA SECTION
+           ============================================= */
+        .cta {
+            background-color: var(--navy);
+            color: var(--white);
+            padding: 3rem 2rem;
+            text-align: center;
+            display: none;
+        }
+
+        .cta.active {
+            display: block;
+        }
+
+        .cta h2 {
+            font-size: 1.75rem;
+            margin-bottom: 1.5rem;
+            color: var(--amber);
+        }
+
+        .btn-cta {
+            padding: 1rem 2rem;
+            background-color: var(--amber);
+            color: var(--white);
+            border: none;
+            border-radius: var(--border-radius);
+            font-size: 1.1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: inline-block;
+        }
+
+        .btn-cta:hover {
+            background-color: #e5941d;
+            transform: translateY(-3px);
+            box-shadow: var(--shadow-hover);
+        }
+
+        /* =============================================
+           FOOTER
+           ============================================= */
+        footer {
+            background-color: var(--amber);
+            color: var(--navy);
+            padding: 2rem;
+            text-align: center;
+            font-size: 0.95rem;
+        }
+
+        /* =============================================
+           RESPONSIVE DESIGN
+           ============================================= */
+        @media (max-width: 768px) {
+            header {
+                flex-direction: column;
+                gap: 1rem;
+            }
+
+            nav {
+                gap: 1rem;
+                flex-wrap: wrap;
+                justify-content: center;
+            }
+
+            .hero {
+                min-height: 400px;
+                padding: 3rem 1rem;
+            }
+
+            .hero h1 {
+                font-size: 2rem;
+            }
+
+            .features {
+                padding: 2rem 1rem;
+                grid-template-columns: 1fr;
+            }
+
+            .dashboard-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .form-row {
+                grid-template-columns: 1fr;
+            }
+
+            .modal-content {
+                width: 95%;
+            }
+
+            .transaction-item {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 0.5rem;
+            }
+
+            .transaction-amount {
+                align-self: flex-end;
+            }
+        }
+
+        @media (max-width: 480px) {
+            header {
+                padding: 1rem;
+            }
+
+            .auth-buttons {
+                width: 100%;
+                flex-direction: column;
+            }
+
+            .btn-small {
+                width: 100%;
+            }
+
+            .hero h1 {
+                font-size: 1.5rem;
+            }
+
+            .hero p {
+                font-size: 1rem;
+            }
+
+            nav {
+                gap: 0.5rem;
+            }
+
+            nav a {
+                font-size: 0.85rem;
+            }
+        }
+
+        /* =============================================
+           UTILITY CLASSES
+           ============================================= */
+        .hidden {
+            display: none !important;
+        }
+
+        .success-message {
+            background-color: #d4edda;
+            border: 1px solid #c3e6cb;
+            color: #155724;
+            padding: 1rem;
+            border-radius: var(--border-radius);
+            margin-bottom: 1rem;
+        }
+
+        .error-message {
+            background-color: #f8d7da;
+            border: 1px solid #f5c6cb;
+            color: #721c24;
+            padding: 1rem;
+            border-radius: var(--border-radius);
+            margin-bottom: 1rem;
+        }
+    </style>
+</head>
+<body>
+    <!-- ========== HEADER / NAVIGATION ========== -->
+    <header>
+        <div class="logo">💰 FinTracker</div>
+        <nav>
+            <a href="#" onclick="scrollToSection('hero')">Home</a>
+            <a href="#" onclick="scrollToSection('features')">Features</a>
+            <a href="#" onclick="showAuthModal()">Dashboard</a>
+        </nav>
+        <div class="auth-buttons">
+            <button class="btn-small" onclick="showLoginModal()">Login</button>
+            <button class="btn-small" onclick="showSignupModal()">Sign Up</button>
+        </div>
+    </header>
+
+    <!-- ========== AUTHENTICATION MODALS ========== -->
+    <!-- Login Modal -->
+    <div id="loginModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Login</h2>
+                <button class="close-btn" onclick="closeModal('loginModal')">&times;</button>
+            </div>
+            <form onsubmit="handleLogin(event)">
+                <div class="form-group">
+                    <label for="loginEmail">Email Address</label>
+                    <input type="email" id="loginEmail" required placeholder="you@example.com">
+                </div>
+                <div class="form-group">
+                    <label for="loginPassword">Password</label>
+                    <input type="password" id="loginPassword" required placeholder="Enter your password">
+                </div>
+                <button type="submit" class="btn-primary">Login</button>
+                <div class="form-footer">
+                    Don't have an account? <button type="button" onclick="switchModal('loginModal', 'signupModal')">Sign up here</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Signup Modal -->
+    <div id="signupModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Create Account</h2>
+                <button class="close-btn" onclick="closeModal('signupModal')">&times;</button>
+            </div>
+            <form onsubmit="handleSignup(event)">
+                <div class="form-group">
+                    <label for="signupName">Full Name</label>
+                    <input type="text" id="signupName" required placeholder="John Doe">
+                </div>
+                <div class="form-group">
+                    <label for="signupEmail">Email Address</label>
+                    <input type="email" id="signupEmail" required placeholder="you@example.com">
+                </div>
+                <div class="form-group">
+                    <label for="signupPassword">Password</label>
+                    <input type="password" id="signupPassword" required placeholder="Create a strong password">
+                </div>
+                <div class="form-group">
+                    <label for="signupPasswordConfirm">Confirm Password</label>
+                    <input type="password" id="signupPasswordConfirm" required placeholder="Confirm your password">
+                </div>
+                <button type="submit" class="btn-primary">Create Account</button>
+                <div class="form-footer">
+                    Already have an account? <button type="button" onclick="switchModal('signupModal', 'loginModal')">Login here</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- ========== LANDING PAGE ========== -->
+    <section id="hero" class="hero landing-section">
+        <h1>Personal Finance Tracker for Students</h1>
+        <p>Empower Your Financial Future</p>
+    </section>
+
+    <!-- ========== FEATURES SECTION ========== -->
+    <section id="features" class="features landing-section">
+        <h2 class="features-title">Key Features</h2>
+        <div class="feature-card">
+            <h3>🔒 User Authentication</h3>
+            <p>A secure login system that protects your data with industry-standard encryption protocols. Your financial information is encrypted end-to-end, ensuring maximum security and privacy.</p>
+        </div>
+        <div class="feature-card">
+            <h3>📊 Real-Time Transaction Tracking</h3>
+            <p>Integrate seamlessly with financial data APIs to track your expenses in real-time. Monitor spending patterns and gain valuable insights into your financial habits instantly.</p>
+        </div>
+        <div class="feature-card">
+            <h3>💡 Budgeting Tools</h3>
+            <p>User-friendly interface for effective budgeting and expense management. Set limits, track progress, and achieve your financial goals with intuitive planning tools.</p>
+        </div>
+    </section>
+
+    <!-- ========== DASHBOARD / MAIN CONTENT ========== -->
+    <main id="dashboard">
+        <div class="dashboard-container">
+            <h1 style="color: var(--navy); margin-bottom: 1.5rem;">Welcome to Your Dashboard</h1>
+
+            <!-- Summary Cards -->
+            <div class="dashboard-grid">
+                <div class="card">
+                    <h2>Total Balance</h2>
+                    <div class="card-content">
+                        <div style="font-size: 2rem; color: var(--amber); font-weight: bold; margin-bottom: 0.5rem;" id="totalBalance">$0.00</div>
+                        <p>Your current account balance</p>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <h2>Monthly Income</h2>
+                    <div class="card-content">
+                        <div style="font-size: 2rem; color: #28a745; font-weight: bold; margin-bottom: 0.5rem;" id="monthlyIncome">$0.00</div>
+                        <p>Total income this month</p>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <h2>Monthly Expenses</h2>
+                    <div class="card-content">
+                        <div style="font-size: 2rem; color: #dc3545; font-weight: bold; margin-bottom: 0.5rem;" id="monthlyExpenses">$0.00</div>
+                        <p>Total spending this month</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Transaction Tracking Section -->
+            <div class="card">
+                <h2>Add Transaction</h2>
+                <div class="transaction-form">
+                    <form onsubmit="addTransaction(event)">
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="transDescription">Description</label>
+                                <input type="text" id="transDescription" required placeholder="e.g., Coffee, Tuition Fee">
+                            </div>
+                            <div class="form-group">
+                                <label for="transAmount">Amount ($)</label>
+                                <input type="number" id="transAmount" step="0.01" required placeholder="0.00">
+                            </div>
+                            <div class="form-group">
+                                <label for="transCategory">Category</label>
+                                <select id="transCategory">
+                                    <option value="Food">Food</option>
+                                    <option value="Transportation">Transportation</option>
+                                    <option value="Education">Education</option>
+                                    <option value="Entertainment">Entertainment</option>
+                                    <option value="Utilities">Utilities</option>
+                                    <option value="Income">Income</option>
+                                    <option value="Other">Other</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label for="transType">Type</label>
+                                <select id="transType">
+                                    <option value="expense">Expense</option>
+                                    <option value="income">Income</option>
+                                </select>
+                            </div>
+                        </div>
+                        <button type="submit" class="btn-primary">Add Transaction</button>
+                    </form>
+                </div>
+
+                <h3 style="color: var(--navy); margin: 1.5rem 0 1rem 0;">Recent Transactions</h3>
+                <div id="successMessage" class="success-message hidden"></div>
+                <div class="transaction-list" id="transactionList">
+                    <p style="color: #999; text-align: center; padding: 2rem;">No transactions yet. Add one to get started!</p>
+                </div>
+            </div>
+
+            <!-- Budgeting Tools Section -->
+            <div class="card" style="margin-top: 2rem;">
+                <h2>Budget Overview</h2>
+                <p style="color: #666; margin-bottom: 1.5rem;">Track your spending against your budget limits</p>
+
+                <div id="budgetList">
+                    <div class="budget-item">
+                        <div class="budget-label">
+                            <span>Food & Dining</span>
+                            <span id="foodProgress">$0.00 / $300.00</span>
+                        </div>
+                        <div class="progress-bar">
+                            <div class="progress-fill" id="foodBar" style="width: 0%"></div>
+                        </div>
+                    </div>
+
+                    <div class="budget-item">
+                        <div class="budget-label">
+                            <span>Transportation</span>
+                            <span id="transProgress">$0.00 / $150.00</span>
+                        </div>
+                        <div class="progress-bar">
+                            <div class="progress-fill" id="transBar" style="width: 0%"></div>
+                        </div>
+                    </div>
+
+                    <div class="budget-item">
+                        <div class="budget-label">
+                            <span>Entertainment</span>
+                            <span id="entertProgress">$0.00 / $200.00</span>
+                        </div>
+                        <div class="progress-bar">
+                            <div class="progress-fill" id="entertBar" style="width: 0%"></div>
+                        </div>
+                    </div>
+
+                    <div class="budget-item">
+                        <div class="budget-label">
+                            <span>Utilities & Other</span>
+                            <span id="utilProgress">$0.00 / $250.00</span>
+                        </div>
+                        <div class="progress-bar">
+                            <div class="progress-fill" id="utilBar" style="width: 0%"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Logout Button -->
+            <div style="text-align: right; margin-top: 2rem;">
+                <button class="btn-small" onclick="handleLogout()">Logout</button>
+            </div>
+        </div>
+    </main>
+
+    <!-- ========== CTA SECTION ========== -->
+    <section class="cta landing-section">
+        <h2>Start Tracking Your Finances Today!</h2>
+        <button class="btn-cta" onclick="showSignupModal()">Get Started Now</button>
+    </section>
+
+    <!-- ========== FOOTER ========== -->
+    <footer>
+        <p>Personal Finance Tracker for Students © 2023</p>
+        <p style="font-size: 0.85rem; margin-top: 0.5rem; opacity: 0.8;">
+            Compliant with GDPR, FERPA, and data privacy regulations. All financial data is encrypted and secured.
+        </p>
+    </footer>
+
+    <!-- ========== JAVASCRIPT ========== -->
+    <script>
+        /**
+         * ============================================
+         * DATA STORAGE & ENCRYPTION NOTES
+         * ============================================
+         * IMPORTANT: In a production environment:
+         *
+         * 1. DATA ENCRYPTION:
+         *    - User passwords MUST be hashed using bcrypt or similar algorithms (NOT stored in plain text)
+         *    - All sensitive financial data should be encrypted using AES-256 or similar protocols
+         *    - Use TLS/SSL (HTTPS) for all data transmission
+         *    - Implement end-to-end encryption for sensitive transactions
+         *
+         * 2. API INTEGRATION:
+         *    - Integrate with secure financial APIs (Plaid, Stripe, etc.) for real-time transaction tracking
+         *    - Implement OAuth 2.0 for secure third-party authentication
+         *    - Use API keys stored securely on backend (never expose in frontend)
+         *
+         * 3. COMPLIANCE:
+         *    - GDPR (EU): Ensure user consent, right to be forgotten, data portability
+         *    - FERPA (US Education): Protect student financial records separately
+         *    - PCI DSS: If storing payment data, comply with Payment Card Industry standards
+         *    - Regular security audits and penetration testing required
+         *
+         * 4. CURRENT IMPLEMENTATION:
+         *    - This is a FRONTEND DEMO with localStorage (NOT SECURE FOR PRODUCTION)
+         *    - All real authentication and encryption must happen on a secure backend server
+         *    - This demonstrates the UI/UX only - production requires proper backend security
+         */
+
+        // Data storage object
+        const appState = {
+            currentUser: null,
+            transactions: [],
+            budgets: {
+                'Food': { spent: 0, limit: 300 },
+                'Transportation': { spent: 0, limit: 150 },
+                'Entertainment': { spent: 0, limit: 200 },
+                'Utilities': { spent: 0, limit: 250 },
+                'Education': { spent: 0, limit: 500 }
+            }
+        };
+
+        // ============================================
+        // AUTHENTICATION FUNCTIONS
+        // ============================================
+
+        function showAuthModal() {
+            if (appState.currentUser) {
+                showDashboard();
+            } else {
+                showLoginModal();
+            }
+        }
+
+        function showLoginModal() {
+            closeAllModals();
+            document.getElementById('loginModal').classList.add('active');
+        }
+
+        function showSignupModal() {
+            closeAllModals();
+            document.getElementById('signupModal').classList.add('active');
+        }
+
+        function closeModal(modalId) {
+            document.getElementById(modalId).classList.remove('active');
+        }
+
+        function closeAllModals() {
+            document.querySelectorAll('.modal').forEach(modal => {
+                modal.classList.remove('active');
+            });
+        }
+
+        function switchModal(fromId, toId) {
+            closeModal(fromId);
+            document.getElementById(toId).classList.add('active');
+        }
+
+        function handleLogin(event) {
+            event.preventDefault();
+            const email = document.getElementById('loginEmail').value;
+            const password = document.getElementById('loginPassword').value;
+
+            // SECURITY NOTE: In production, passwords should NEVER be validated on the frontend.
+            // Always use a secure backend API with proper password hashing (bcrypt, Argon2).
+            // This is a demo only and shows the UI flow.
+
+            if (email && password.length >= 6) {
+                appState.currentUser = {
+                    email: email,
+                    name: email.split('@')[0],
+                    loginTime: new Date()
+                };
+                closeModal('loginModal');
+                showDashboard();
+                loadDashboardData();
+            } else {
+                alert('Please enter valid credentials.');
+            }
+        }
+
+        function handleSignup(event) {
+            event.preventDefault();
+            const name = document.getElementById('signupName').value;
+            const email = document.getElementById('signupEmail').value;
+            const password = document.getElementById('signupPassword').value;
+            const confirmPassword = document.getElementById('signupPasswordConfirm').value;
+
+            // SECURITY NOTE: Password validation should happen on secure backend with:
+            // - Minimum complexity requirements (uppercase, numbers, special characters)
+            // - Password hashing using bcrypt or Argon2
+            // - Secure password reset mechanisms
+            // - Protection against brute-force attacks
+
+            if (password !== confirmPassword) {
+                alert('Passwords do not match.');
+                return;
+            }
+
+            if (password.length < 8) {
+                alert('Password must be at least 8 characters long.');
+                return;
+            }
+
+            appState.currentUser = {
+                email: email,
+                name: name,
+                createdAt: new Date()
+            };
+
+            closeModal('signupModal');
+            showDashboard();
+            loadDashboardData();
+        }
+
+        function handleLogout() {
+            appState.currentUser = null;
+            document.getElementById('dashboard').classList.remove('active');
+            document.querySelectorAll('.landing-section').forEach(section => {
+                section.style.display = 'block';
+            });
+            document.querySelector('.cta').classList.add('active');
+        }
+
+        // ============================================
+        // DASHBOARD FUNCTIONS
+        // ============================================
+
+        function showDashboard() {
+            // Hide landing sections
+            document.querySelectorAll('.landing-section').forEach(section => {
+                section.style.display = 'none';
+            });
+            document.querySelector('.cta').classList.remove('active');
+
+            // Show dashboard
+            document.getElementById('dashboard').classList.add('active');
+        }
+
+        function loadDashboardData() {
+            // Initialize with sample data for demo
+            appState.transactions = [
+                { description: 'Coffee', amount: 5.50, category: 'Food', type: 'expense', date: new Date() },
+                { description: 'Part-time Job', amount: 500, category: 'Income', type: 'income', date: new Date(Date.now() - 86400000) }
+            ];
+            updateDashboard();
+        }
+
+        function addTransaction(event) {
+            event.preventDefault();
+
+            const description = document.getElementById('transDescription').value;
+            const amount = parseFloat(document.getElementById('transAmount').value);
+            const category = document.getElementById('transCategory').value;
+            const type = document.getElementById('transType').value;
+
+            const transaction = {
+                description: description,
+                amount: amount,
+                category: category,
+                type: type,
+                date: new Date()
+            };
+
+            appState.transactions.unshift(transaction);
+
+            // Update budget tracking
+            if (type === 'expense' && appState.budgets[category]) {
+                appState.budgets[category].spent += amount;
+            }
+
+            // Clear form
+            event.target.reset();
+
+            // Show success message
+            const successMsg = document.getElementById('successMessage');
+            successMsg.textContent = `✓ Transaction "${description}" added successfully!`;
+            successMsg.classList.remove('hidden');
+            setTimeout(() => {
+                successMsg.classList.add('hidden');
+            }, 3000);
+
+            updateDashboard();
+        }
+
+        function updateDashboard() {
+            updateBalances();
+            updateTransactionList();
+            updateBudgetProgress();
+        }
+
+        function updateBalances() {
+            let totalIncome = 0;
+            let totalExpenses = 0;
+
+            appState.transactions.forEach(trans => {
+                if (trans.type === 'income') {
+                    totalIncome += trans.amount;
+                } else {
+                    totalExpenses += trans.amount;
+                }
+            });
+
+            const balance = totalIncome - totalExpenses;
+
+            document.getElementById('totalBalance').textContent = '$' + balance.toFixed(2);
+            document.getElementById('monthlyIncome').textContent = '$' + totalIncome.toFixed(2);
+            document.getElementById('monthlyExpenses').textContent = '$' + totalExpenses.toFixed(2);
+        }
+
+        function updateTransactionList() {
+            const listContainer = document.getElementById('transactionList');
+
+            if (appState.transactions.length === 0) {
+                listContainer.innerHTML = '<p style="color: #999; text-align: center; padding: 2rem;">No transactions yet. Add one to get started!</p>';
+                return;
+            }
+
+            listContainer.innerHTML = appState.transactions.map((trans, index) => `
+                <div class="transaction-item">
+                    <div class="transaction-info">
+                        <h4>${trans.description}</h4>
+                        <p>${trans.category} • ${trans.date.toLocaleDateString()}</p>
+                    </div>
+                    <div class="transaction-amount ${trans.type}">
+                        ${trans.type === 'income' ? '+' : '-'}$${trans.amount.toFixed(2)}
+                    </div>
+                    <button style="background: none; border: none; color: #999; cursor: pointer; font-size: 1.2rem;" onclick="deleteTransaction(${index})">&times;</button>
+                </div>
+            `).join('');
+        }
+
+        function deleteTransaction(index) {
+            const trans = appState.transactions[index];
+            if (trans.type === 'expense' && appState.budgets[trans.category]) {
+                appState.budgets[trans.category].spent -= trans.amount;
+            }
+            appState.transactions.splice(index, 1);
+            updateDashboard();
+        }
+
+        function updateBudgetProgress() {
+            const budgetMap = {
+                'Food': { element: 'food', bar: 'foodBar', progress: 'foodProgress' },
+                'Transportation': { element: 'trans', bar: 'transBar', progress: 'transProgress' },
+                'Entertainment': { element: 'entert', bar: 'entertBar', progress: 'entertProgress' },
+                'Utilities': { element: 'util', bar: 'utilBar', progress: 'utilProgress' }
+            };
+
+            Object.keys(budgetMap).forEach(category => {
+                const budget = appState.budgets[category];
+                const map = budgetMap[category];
+                const percentage = Math.min((budget.spent / budget.limit) * 100, 100);
+
+                const barElement = document.getElementById(map.bar);
+                barElement.style.width = percentage + '%';
+
+                // Change color based on budget status
+                if (percentage >= 100) {
+                    barElement.classList.add('danger');
+                    barElement.classList.remove('warning');
+                } else if (percentage >= 75) {
+                    barElement.classList.add('warning');
+                    barElement.classList.remove('danger');
+                } else {
+                    barElement.classList.remove('warning', 'danger');
+                }
+
+                document.getElementById(map.progress).textContent =
+                    `$${budget.spent.toFixed(2)} / $${budget.limit.toFixed(2)}`;
+            });
+        }
+
+        // ============================================
+        // UTILITY FUNCTIONS
+        // ============================================
+
+        function scrollToSection(sectionId) {
+            if (appState.currentUser && sectionId === 'features') {
+                return;
+            }
+
+            if (appState.currentUser) {
+                showDashboard();
+                return;
+            }
+
+            const section = document.getElementById(sectionId);
+            if (section) {
+                section.scrollIntoView({ behavior: 'smooth' });
+            }
+        }
+
+        // Close modals when clicking outside
+        window.addEventListener('click', function(event) {
+            if (event.target.classList.contains('modal')) {
+                closeAllModals();
+            }
+        });
+
+        // Initialize dashboard on load
+        window.addEventListener('load', function() {
+            document.querySelector('.cta').classList.add('active');
+        });
+    </script>
+</body>
+</html>

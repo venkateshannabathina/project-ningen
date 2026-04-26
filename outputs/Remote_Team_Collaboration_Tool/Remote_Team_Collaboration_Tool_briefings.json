@@ -1,0 +1,8 @@
+{
+  "client_idea": "remote team collaboration tool",
+  "client_clarifications": "CEO asked: What specific metrics and user feedback will define success for the remote team collaboration tool within the first 90 days post-launch?\nCTO asked: What existing infrastructure and technical constraints\u2014such as security protocols, data storage requirements, or API limitations\u2014must our tool operate within to ensure compatibility and user trust?\nCMO asked: Who is the specific primary customer archetype you envision for this remote team collaboration tool, and what immediate pain points are they experiencing that would prompt them to pay for a new solution right now?\nCOO asked: What is the hard deadline for the launch of the remote team collaboration tool, and what budget and headcount resources are allocated for its development?\n\nClient's answer: The product is remote team collaboration tool. Target audience is professionals and consumers who need this solution. Budget is flexible, timeline is 90 days for MVP. No existing infrastructure \u2014 building from scratch. Success means active engaged users and positive feedback within the first month.",
+  "ceo_briefing": "",
+  "cto_briefing": "",
+  "cmo_briefing": "",
+  "coo_briefing": ""
+}

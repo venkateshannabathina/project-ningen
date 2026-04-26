@@ -1,57 +1,53 @@
-**Prompt for Claude Code to Build TodoMaster Pro Single Page Web Application**
+**Claude Code Prompt:**
 
----
+Create a complete single-page web application for the product "NoteSync Pro" that meets the following specifications. The application should be entirely contained within a single HTML file named `index.html`, with no external dependencies. Follow the exact file structure, styling, and content guidelines provided below.
 
-**Build a complete single page web application for "TodoMaster Pro" with the following specifications:**
+### File Structure:
+- The entire application must reside in a single file named `index.html`.
 
-### File Structure
-- Everything must be contained within a single HTML file named `index.html`.
-
-### Color Scheme
-- Primary colors:
+### Color Scheme:
+- Use the following colors consistently throughout the application:
   - Navy: `#0A0A1A`
   - Amber: `#F5A04A`
 
-### Content and Layout
-1. **Hero Section**
-   - Background color: navy `#0A0A1A`
-   - Text:
-     - Product Name: "TodoMaster Pro" (Font size: 48px, color: amber `#F5A04A`)
-     - Tagline: "Revolutionizing task management for busy professionals." (Font size: 24px, color: white)
-   - Center the text both vertically and horizontally in the hero section.
+### Content Structure:
+1. **Hero Section**:
+   - Background color: Navy `#0A0A1A`
+   - Content:
+     - Product Name: "NoteSync Pro" (Large, bold font, white color)
+     - Tagline: "Your notes, synchronized and accessible anytime, anywhere." (Medium font, amber color)
 
-2. **Features Section**
-   - Background color: white
-   - Title: "Key Features" (Font size: 36px, color: navy `#0A0A1A`, centered)
-   - List the following features:
-     - Feature 1: "Robust data synchronization across multiple devices and platforms."
-     - Feature 2: "User authentication and secure data management."
-     - Feature 3: "Real-time conflict resolution for task updates."
-   - Each feature must be displayed in its own box with padding of 20px, border-radius of 10px, and a subtle shadow effect for depth. Use navy `#0A0A1A` for the box border.
+2. **Features Section**:
+   - Background color: White
+   - Display the top three features from the requirements in a grid layout:
+     - **Feature 1**: Real-time data synchronization across devices.
+     - **Feature 2**: Basic note-taking functionality with text formatting options.
+     - **Feature 3**: User authentication and secure login with encryption.
+   - Each feature should have an icon (use Font Awesome icons embedded in the HTML) and a short description.
 
-3. **Call to Action Section**
-   - Background color: navy `#0A0A1A`
-   - Text: "Get Started Today!" (Font size: 30px, color: amber `#F5A04A`, centered)
-   - Button:
-     - Text: "Sign Up Now" (Font size: 20px, color: white)
-     - Background color: amber `#F5A04A`
-     - Padding: 15px 30px
-     - Border-radius: 5px
-     - Center the button below the text.
-     - Button should change to a darker amber on hover.
+3. **Call to Action Section**:
+   - Background color: Amber `#F5A04A`
+   - Content:
+     - Heading: "Get Started with NoteSync Pro Today!" (Bold, white color)
+     - Button: "Sign Up Now" (White text, navy background, rounded corners)
 
-4. **Footer**
-   - Background color: navy `#0A0A1A`
-   - Text: "© 2023 TodoMaster Pro" (Font size: 14px, color: amber `#F5A04A`, centered)
+4. **Footer**:
+   - Background color: Navy `#0A0A1A`
+   - Content:
+     - Text: "NoteSync Pro © 2023" (White color)
 
-### Design and Responsiveness
-- Ensure the design is fully responsive across devices (desktop, tablet, mobile).
-- Utilize a clean and modern CSS layout with Flexbox or Grid for alignment and spacing.
-- No external dependencies or frameworks; write all CSS directly within the `<style>` tag in the HTML file.
+### Design Requirements:
+- Ensure the design is fully responsive, adjusting layout for mobile, tablet, and desktop views.
+- Use clean, modern CSS for styling, focusing on usability and aesthetics.
+- Ensure all text is legible against background colors with appropriate contrast ratios.
 
-### Final Instructions
-- Save everything to a single file called `index.html`.
+### Additional Instructions:
+- Embed any necessary CSS and JavaScript within the `<style>` and `<script>` tags in the HTML file, respectively.
+- Ensure that the application runs smoothly with no external libraries or frameworks.
+
+### Final Task:
+Save everything to a single file called `index.html`.
 
 ---
 
-**End of Prompt**
+By following this prompt, Claude Code should be able to construct a fully functional single-page web application for NoteSync Pro that adheres to all specified requirements, design guidelines, and structure without needing further clarification.

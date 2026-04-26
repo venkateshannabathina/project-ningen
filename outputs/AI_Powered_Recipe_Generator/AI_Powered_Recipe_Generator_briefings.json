@@ -1,0 +1,8 @@
+{
+  "client_idea": "AI powered recipe generator",
+  "client_clarifications": "CEO asked: What specific metrics or outcomes will you use to define success for the AI-powered recipe generator in the first 90 days, and how will you know we've achieved it?\nCTO asked: What existing infrastructure do we have for data storage and processing, and what hard constraints (e.g., budget, technology stack, or regulatory compliance) must we work within when building the AI and ingredient database?\nCMO asked: Who specifically is the first customer you envision for the AI-powered recipe generator, and what immediate problem or need would drive them to pay for it today?\nCOO asked: What is the hard deadline for launching a minimum viable product, and what budget and headcount do we have allocated to ensure we meet that timeline?\n\nClient's answer: The product is AI powered recipe generator. Target audience is professionals and consumers who need this solution. Budget is flexible, timeline is 90 days for MVP. No existing infrastructure \u2014 building from scratch. Success means active engaged users and positive feedback within the first month.",
+  "ceo_briefing": "",
+  "cto_briefing": "",
+  "cmo_briefing": "",
+  "coo_briefing": ""
+}

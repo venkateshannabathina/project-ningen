@@ -182,6 +182,7 @@ def build_prompt(agent_key: str, context: dict, instruction: str) -> str:
     agreed_text = format_agreed(context["agreed_on"])
     conflicts_text = format_conflicts(context["conflicts"])
     clarifications_text = format_clarifications(context.get("client_clarifications", ""))
+    memory_text = context.get("memory_context", "")
 
     prompt = f"""=== YOUR ROLE & PERSONALITY ===
 {cfg['personality']}
@@ -191,6 +192,9 @@ def build_prompt(agent_key: str, context: dict, instruction: str) -> str:
 
 === CLIENT CLARIFICATIONS ===
 {clarifications_text}
+
+=== PAST MEETING MEMORY ===
+{memory_text if memory_text else "(No prior meeting memory)"}
 
 === FULL CONVERSATION HISTORY ===
 {history_text}
@@ -975,7 +979,7 @@ def main():
 # Terminal mode (main) is unaffected.
 # ══════════════════════════════════════════════════════════════════════════════
 
-def initialize_context(client_idea: str) -> dict:
+def initialize_context(client_idea: str, memory_context: str = "") -> dict:
     """Initialise a fresh shared context dict for a new board meeting."""
     return {
         "client_idea": client_idea,
@@ -988,6 +992,7 @@ def initialize_context(client_idea: str) -> dict:
         "agreed_on": [],
         "conflicts": [],
         "open_questions": [],
+        "memory_context": memory_context,
     }
 
 

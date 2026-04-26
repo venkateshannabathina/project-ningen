@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NoteSync Pro</title>
+    <style>
+        body {
+            margin: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            color: #333;
+            background-color: #f4f4f9;
+        }
+        .navbar {
+            position: sticky;
+            top: 0;
+            background-color: #0A0A1A;
+            color: white;
+            padding: 10px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            z-index: 1000;
+        }
+        .navbar a {
+            color: white;
+            text-decoration: none;
+            margin: 0 10px;
+            transition: color 0.3s;
+        }
+        .navbar a:hover {
+            color: #F5A04A;
+        }
+        .hero {
+            text-align: center;
+            padding: 100px 20px;
+            background-color: #0A0A1A;
+            color: white;
+        }
+        .hero h1 {
+            font-size: 3em;
+            margin: 0;
+        }
+        .hero p {
+            font-size: 1.2em;
+            margin: 10px 0 20px;
+        }
+        .hero button {
+            background-color: #F5A04A;
+            border: none;
+            padding: 10px 20px;
+            font-size: 1em;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+        .hero button:hover {
+            background-color: #e5943a;
+        }
+        .features {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            padding: 50px 20px;
+            background-color: #fff;
+        }
+        .feature {
+            flex: 1 1 300px;
+            max-width: 300px;
+            margin: 10px;
+            text-align: center;
+            padding: 20px;
+            border-radius: 8px;
+            background-color: #f9f9f9;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+        .feature h3 {
+            margin: 10px 0;
+        }
+        .feature p {
+            font-size: 0.9em;
+            color: #666;
+        }
+        .demo {
+            padding: 50px 20px;
+            background-color: #f4f4f9;
+            text-align: center;
+        }
+        .demo textarea {
+            width: 80%;
+            max-width: 600px;
+            height: 200px;
+            padding: 10px;
+            font-size: 1em;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            margin-bottom: 20px;
+        }
+        .footer {
+            background-color: #0A0A1A;
+            color: white;
+            text-align: center;
+            padding: 20px;
+        }
+    </style>
+</head>
+<body>
+    <div class="navbar">
+        <div>NoteSync Pro</div>
+        <div>
+            <a href="#features">Features</a>
+            <a href="#demo">Demo</a>
+            <a href="#contact">Contact</a>
+        </div>
+    </div>
+    <div class="hero">
+        <h1>NoteSync Pro</h1>
+        <p>Your notes, synchronized everywhere.</p>
+        <button>Get Started</button>
+    </div>
+    <div id="features" class="features">
+        <div class="feature">
+            <h3>🔄 Real-Time Sync</h3>
+            <p>Seamlessly sync your notes across all devices in real-time.</p>
+        </div>
+        <div class="feature">
+            <h3>📝 Rich Text Editing</h3>
+            <p>Format your notes with our intuitive text editor.</p>
+        </div>
+        <div class="feature">
+            <h3>🔒 Secure & Private</h3>
+            <p>Keep your notes safe with top-notch encryption.</p>
+        </div>
+    </div>
+    <div id="demo" class="demo">
+        <h2>Try NoteSync Pro</h2>
+        <textarea placeholder="Type your note here..."></textarea>
+        <p>Notes will be saved locally and synchronized when online.</p>
+    </div>
+    <div class="footer">
+        <p>&copy; 2023 NoteSync Pro. All rights reserved.</p>
+    </div>
+    <script>
+        // Simple local storage for offline capability
+        const textarea = document.querySelector('textarea');
+        textarea.value = localStorage.getItem('note') || '';
+        textarea.addEventListener('input', () => {
+            localStorage.setItem('note', textarea.value);
+        });
+    </script>
+</body>
+</html>
