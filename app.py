@@ -169,16 +169,16 @@ def load_ui(api_base="http://localhost:5001"):
                 const isDone = r.status === 'done';
                 const sColor = {idle:'#bbb',running:'#F5A04A',done:'#27AE60',error:'#E74C3C'}[r.status]||'#bbb';
                 const sLabel = {idle:'waiting',running:label+'...',done:'tap to view',error:'✗ error'}[r.status]||'waiting';
-                const handleClick = () => {{
+                const handleClick = () => {
                   if (!isDone) return;
-                  fetch(`{api_base}/api/output/${{id}}`)
+                  fetch(`__API_BASE__/api/output/${id}`)
                     .then(res => res.json())
-                    .then(data => {{
-                       setModal({{agent:id, color, ...data}});
+                    .then(data => {
+                       setModal({agent:id, color, ...data});
                        if (data.files) setModalTab(Object.keys(data.files)[0]);
-                    }})
-                    .catch(()=>{{}});
-                }};
+                    })
+                    .catch(()=>{});
+                };
                 return (
                   <div key={id} onClick={handleClick}
                     style={{display:'flex',alignItems:'center',gap:7,padding:'5px 7px',
@@ -206,6 +206,8 @@ def load_ui(api_base="http://localhost:5001"):
               })}
             </div>
           </Room>"""
+
+    results_box = results_box.replace("__API_BASE__", api_base)
 
     html = html.replace(
         '<Room label="play area" labelPos="c" style={{flex:1}} />',
