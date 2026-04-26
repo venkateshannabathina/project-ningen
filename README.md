@@ -6,157 +6,139 @@ colorTo: red
 sdk: docker
 pinned: false
 ---
-# Ningen (人間)
 
-AI boardroom that turns a startup idea into requirements, product output, marketing assets, operations docs, and strategy docs.
+# Ningen (人間) — AI Boardroom
 
-## What It Does
+Four AI executives debate your startup idea, detect conflicts, resolve them, then automatically build the product, write the marketing, plan execution, and draft the investor pitch.
 
-Ningen runs a 4-agent board meeting (CEO, CTO, CMO, COO), then executes downstream agents on the latest generated requirements.
+---
 
-- **Board meeting engine** in `board_meeting.py`:
-  - Round 1: opening positions
-  - Client clarifications
-  - Round 2: reactions
-  - Conflict detection and resolution
-  - Final briefings + requirements generation
-- **Execution agents**:
-  - `execute_cto.py`: generates a build prompt and runs Claude Code to create product output
-  - `execute_cmo.py`: generates/publishes marketing artifacts
-  - `execute_coo.py`: generates `execution_plan.md` and `risk_register.md`
-  - `execute_ceo.py`: generates `investor_pitch.md` and `executive_summary.md`
-- **Memory layer** in `memory_store.py`: stores summaries of recent runs in `outputs/memory_store.json`
+## How It Works
 
-## Current Entry Points
+1. You type a startup idea into the chat window
+2. CEO, CTO, CMO, COO each give opening positions and ask you one clarifying question
+3. You answer all four questions in one message
+4. Agents react to each other, surface conflicts, and resolve them
+5. Meeting ends — all four execution agents fire in parallel
+6. Click any result card to see the output (live product preview, marketing posts, docs)
 
-- `run_all.py`: full autonomous pipeline (board meeting + CTO + CMO + COO + CEO)
-- `app.py`: Streamlit frontend (embedded UI) that talks to `api_server.py`
-- `start.sh`: convenience launcher for API + Streamlit together
-- `dashboard/app.py`: terminal-style board meeting flow
-- `ningen_env.py`: RL-style experiment runner and reward logging
+---
 
-## Project Layout
+## Architecture
 
-```text
-project-ningen/
-├── board_meeting.py
-├── api_server.py
-├── app.py
-├── run_all.py
-├── execute_cto.py
-├── execute_cmo.py
-├── execute_coo.py
-├── execute_ceo.py
-├── memory_store.py
-├── ningen_env.py
-├── start.sh
-├── dashboard/
-│   └── app.py
-├── outputs/
-└── requirements.txt
 ```
+React UI (uidesign.html)
+  └─ polls Flask API every 1.5s
+       └─ Flask (api_server.py) on :5001
+            └─ board_meeting.py  →  execute_cto/cmo/coo/ceo.py
+```
+
+- **Frontend**: React 18 + Babel (no build step), runs inside Streamlit iframe
+- **API bridge**: Flask + flask-cors, shared state via `threading.Lock`
+- **Board meeting**: GPT-4o-mini for all agent debate, conflict detection, requirements
+- **CTO product build**: GPT-4o (8K tokens) → single-file HTML product
+- **CMO / COO / CEO**: GPT-4o-mini → marketing posts, execution plan, investor pitch
+- **Memory**: `memory_store.json` — last 3 meetings injected into every agent prompt
+
+---
 
 ## Setup
 
-### 1) Install dependencies
-
 ```bash
-python3 -m venv venv
-source venv/bin/activate
+git clone <repo>
+cd project-ningen
+python3 -m venv venv && source venv/bin/activate
 pip install -r requirements.txt
 ```
 
-### 2) Create `.env`
-
-At minimum:
+Create `.env`:
 
 ```env
 OPENAI_API_KEY=your_openai_key
 ```
 
-Optional (used by marketing publishing paths):
+Optional (for CMO publishing):
 
 ```env
 RESEND_API_KEY=your_resend_key
-RESEND_FROM_EMAIL=you@domain.com
-RESEND_SUBSCRIBER_EMAILS=user1@example.com,user2@example.com
 DEVTO_API_KEY=your_devto_key
 DISCORD_WEBHOOK_URL=https://discord.com/api/webhooks/...
 ```
 
-### 3) Install Claude Code CLI (for CTO build path)
+---
+
+## Running
+
+**Web UI (recommended):**
 
 ```bash
-npm install -g @anthropic-ai/claude-code
+bash start.sh
+# opens http://localhost:8501
 ```
 
-## Usage
-
-### Run everything in one command
+**CLI — full pipeline:**
 
 ```bash
-python3 run_all.py "AI-powered invoicing assistant for freelancers"
+python3 run_all.py "your startup idea"
 ```
 
-Without an argument, it prompts for an idea interactively.
-
-### Run only the board meeting
+**Individual agents (after a board meeting has run):**
 
 ```bash
-python3 dashboard/app.py
+python3 execute_cto.py   # builds HTML product
+python3 execute_cmo.py   # generates marketing content
+python3 execute_coo.py   # generates execution plan + risk register
+python3 execute_ceo.py   # generates investor pitch + exec summary
 ```
 
-### Run web UI (Streamlit + Flask API)
+---
 
-```bash
-./start.sh
+## Project Layout
+
+```
+project-ningen/
+├── app.py                  # Streamlit entry point + HTML patcher
+├── api_server.py           # Flask API bridge
+├── board_meeting.py        # 3-round debate engine
+├── execute_cto.py          # GPT-4o product builder
+├── execute_cmo.py          # CMO marketing agent
+├── execute_coo.py          # COO planning agent
+├── execute_ceo.py          # CEO strategy agent
+├── memory_store.py         # Cross-episode learning store
+├── run_all.py              # Master CLI runner
+├── ningen_env.py           # RL experiment runner
+├── uidesign.html           # React boardroom UI
+├── start.sh                # Launch script (Flask + Streamlit)
+└── outputs/
+    ├── <ProductName>/
+    │   ├── index.html          # Built product (CTO)
+    │   ├── *_requirements.json
+    │   └── *_briefings.json
+    ├── cold_email.md
+    ├── devto_article.md
+    ├── discord_post.md
+    ├── reddit_post.md
+    ├── execution_plan.md
+    ├── risk_register.md
+    ├── investor_pitch.md
+    ├── executive_summary.md
+    ├── memory_store.json
+    └── episode_log.json
 ```
 
-Or manually:
-
-```bash
-streamlit run app.py
-```
-
-### Run individual execution agents
-
-```bash
-python3 execute_cto.py
-python3 execute_cmo.py
-python3 execute_coo.py
-python3 execute_ceo.py
-```
-
-### Run RL baseline experiment
-
-```bash
-python3 ningen_env.py
-```
+---
 
 ## Outputs
 
-Board meeting outputs are stored per generated product folder under `outputs/`:
+| Agent | Output Files |
+|---|---|
+| CTO | `outputs/<ProductName>/index.html` — working HTML product |
+| CMO | `cold_email.md`, `discord_post.md`, `reddit_post.md`, `devto_article.md` |
+| COO | `execution_plan.md`, `risk_register.md` |
+| CEO | `investor_pitch.md`, `executive_summary.md` |
 
-- `outputs/<ProductName>/<ProductName>_requirements.json`
-- `outputs/<ProductName>/<ProductName>_briefings.json`
+---
 
-Execution artifacts are written to `outputs/` root, including:
+## Deep Dive
 
-- `index.html`
-- `cto_claude_prompt.txt`
-- `cold_email.md`
-- `devto_article.md`
-- `discord_post.md`
-- `reddit_post.md`
-- `execution_plan.md`
-- `risk_register.md`
-- `investor_pitch.md`
-- `executive_summary.md`
-- `memory_store.json`
-- `episode_log.json`
-- `rl_experiment.json`
-
-## Notes
-
-- Several files in this repository are generated outputs and may change often.
-- Execution agents read the **latest** available requirements/briefings from `outputs/`.
+See [BLOG.md](BLOG.md) for a full technical writeup covering the reward system, conflict detection architecture, memory design, and string-patching approach.
